@@ -1,0 +1,6 @@
+{% for car in cars %}
+    <p>{{ car.title }}</p>
+    <p>{{ car.description }}</p>
+    <img src="/media/{{ car.image }}" alt="{{ car.title }}" width="300" height="200">
+    <a href="/cars_list/{{ car.id }}/">Подробнее</a>
+{% endfor %}

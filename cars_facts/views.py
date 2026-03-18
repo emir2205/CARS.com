@@ -1,12 +1,13 @@
-from django.shortcuts import render
+from django.shortcuts import get_object_or_404, render
 
-from django.http import HttpResponse
+from .models import Car
 
-def ford_fact(request):
-    return HttpResponse("<h1>Факт о Ford: первая массовая машина в истории - Ford Model T</h1>")
 
-def xiami_fact(request):
-    return HttpResponse("<h1>Факт о Xiami SU 7: самый быстрый электрокар</h1>")
+def cars_list_view(request):
+    cars = Car.objects.all().order_by("-id")
+    return render(request, "car_list.html", {"cars": cars})
 
-def toyota_fact(request):
-    return HttpResponse("<h1>Факт: самая продаваемая машина в мире - Toyota Corolla</h1>")
+
+def cars_detail_view(request, id):
+    car = get_object_or_404(Car, id=id)
+    return render(request, "car_detail.html", {"car": car})
