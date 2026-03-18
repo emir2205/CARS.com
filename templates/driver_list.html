@@ -1,0 +1,18 @@
+<h1>Список водителей</h1>
+{% for i in drivers %}
+
+<p>{{ i.full_name }}</p>
+<img src="{{ i.photo.url }}" alt="" width="300" height="200">
+<p>{{ i.birth_date }}</p>
+<p>{{ i.choice_car }}</p>
+<p>{{ i.driving_experience }}</p>
+<p>{{ i.driver_license }}</p>
+<p>{{ i.created_at }}</p>
+
+<a href="/driver_list/{{ i.id }}/">Изменить анкету</a>
+<a href="/driver_list/{{ i.id }}/delete/">Удалить анкету</a>
+
+<hr>
+<hr>
+<hr>
+{% endfor %}
