@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     'cars_facts',
     'tourism',
     'drivers',
+    'myShop',
 ]
 
 MIDDLEWARE = [
