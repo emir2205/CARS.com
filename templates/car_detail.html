@@ -1,6 +1,12 @@
+<h1>
+    <p>Счетчик просмотров: {{ car.views }}</p>
+</h1>
+
 <h1>{{ car.title }}</h1>
 <p><b>Описание:</b> {{ car.description }}</p>
-<img src="{{ car.image.url }}" alt="" width="400" height="300">
+{% if car.image %}
+    <img src="{{ car.image.url }}" alt="" width="400" height="300">
+{% endif %}
 <p><b>Бренд:</b> {{ car.brand }}</p>
 <p><b>Модель:</b> {{ car.model_name }}</p>
 <p><b>Год:</b> {{ car.year }}</p>
@@ -11,3 +17,5 @@
 <p><b>Цвет:</b> {{ car.color }}</p>
 <p><b>Цена:</b> {{ car.price }}</p>
 <p><b>Дата добавления:</b> {{ car.created_at }}</p>
+
+<a href="{% url 'cars:cars' %}">На список машин</a>

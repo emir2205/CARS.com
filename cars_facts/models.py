@@ -14,10 +14,12 @@ class Car(models.Model):
     price = models.DecimalField("Цена", max_digits=12, decimal_places=2)
     description = models.TextField("Описание")
     image = models.ImageField("Изображение", upload_to="cars/", blank=True, null=True)
+    views = models.PositiveIntegerField("Просмотры", default=0, null=True)
     created_at = models.DateTimeField("Дата добавления", auto_now_add=True)
-   
+
     def __str__(self):
         return f"{self.brand} {self.model_name}"
+
     class Meta:
         verbose_name = "Машина"
         verbose_name_plural = "Машины"
