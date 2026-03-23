@@ -1,25 +1,33 @@
-from django.shortcuts import get_object_or_404, render
+from django.views import generic
 
 from myShop.models import Category, Product
 
 
-def category_list_view(request):
-    if request.method == 'GET':
-        categories = Category.objects.all().order_by('-id')
-    return render(request, 'categories.html', {'categories': categories})
+class CategoryListView(generic.ListView):
+    template_name = 'categories.html'
+    model = Category
+    context_object_name = 'categories'
+
+    def get_queryset(self):
+        return self.model.objects.all().order_by('-id')
 
 
-def product_list_view(request):
-    if request.method == 'GET':
-        products = Product.objects.all().order_by('-id')
-    return render(request, 'products.html', {'products': products})
+class ProductListView(generic.ListView):
+    template_name = 'products.html'
+    model = Product
+    context_object_name = 'products'
+
+    def get_queryset(self):
+        return self.model.objects.all().order_by('-id')
 
 
-def category_products_view(request, id):
-    category = get_object_or_404(Category, id=id)
-    products = Product.objects.filter(category=category).order_by('-id')
-    return render(
-        request,
-        'category_products.html',
-        {'category': category, 'products': products},
-    )
+class CategoryProductsView(generic.DetailView):
+    template_name = 'category_products.html'
+    model = Category
+    context_object_name = 'category'
+    pk_url_kwarg = 'id'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['products'] = Product.objects.filter(category=context['category']).order_by('-id')
+        return context

@@ -1,50 +1,40 @@
-from django.contrib.auth import login, logout
 from django.contrib.auth.forms import AuthenticationForm
-from django.contrib.auth.models import User
-from django.shortcuts import redirect, render
+from django.contrib.auth.views import LoginView, LogoutView
+from django.urls import reverse_lazy
+from django.views import generic
 
 from users import forms
 
 
-def register_view(request):
-    if request.method == "POST":
-        form = forms.CustomRegisterForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect("/login/")
-    else:
-        form = forms.CustomRegisterForm()
-    return render(request, "register.html", {"form": form})
+class RegisterView(generic.CreateView):
+    template_name = 'register.html'
+    form_class = forms.CustomRegisterForm
+    success_url = '/login/'
 
 
-def auth_view(request):
-    if request.method == "POST":
-        form = AuthenticationForm(data=request.POST)
-        if form.is_valid():
-            captcha_answer = request.POST.get("captcha_answer")
-            if captcha_answer == "7":
-                user = form.get_user()
-                login(request, user)
-                return redirect("/congratulation/")
-            form.add_error(None, "Неверная CAPTCHA")
-    else:
-        form = AuthenticationForm()
+class AuthLoginView(LoginView):
+    template_name = 'login.html'
+    form_class = AuthenticationForm
 
-    return render(request, "login.html", {"form": form})
+    def form_valid(self, form):
+        captcha_answer = self.request.POST.get('captcha_answer')
+        if captcha_answer != '7':
+            form.add_error(None, 'Неверная CAPTCHA')
+            return self.form_invalid(form)
+        return super().form_valid(form)
 
-
-def logout_view(request):
-    logout(request)
-    return redirect("/login/")
+    def get_success_url(self):
+        return '/congratulation/'
 
 
-def cong_view(request):
-    if request.method == "GET":
-        user = User.objects.all()
-    return render(
-        request,
-        "cong.html",
-        {
-            "user": user
-        }
-    )
+class AuthLogoutView(LogoutView):
+    next_page = reverse_lazy('login')
+
+
+class CongView(generic.TemplateView):
+    template_name = 'cong.html'
+
+    def get_context_data(self, **kwargs):
+        context = super().get_context_data(**kwargs)
+        context['user'] = self.request.user
+        return context

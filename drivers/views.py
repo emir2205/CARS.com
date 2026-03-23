@@ -1,39 +1,38 @@
-from django.shortcuts import get_object_or_404, redirect, render
+from django.shortcuts import get_object_or_404, redirect
+from django.views import generic
 
 from drivers.forms import DriverForm
 from drivers.models import DriverModel
 
 
-def create_driver_view(request):
-    if request.method == 'POST':
-        form = DriverForm(request.POST, request.FILES)
-        if form.is_valid():
-            form.save()
-            return redirect('/driver_list/')
-    else:
-        form = DriverForm()
-    return render(request, 'create_driver.html', {'form': form})
+class CreateDriverView(generic.CreateView):
+    template_name = 'create_driver.html'
+    form_class = DriverForm
+    success_url = '/driver_list/'
 
 
-def driver_list_view(request):
-    if request.method == 'GET':
-        drivers = DriverModel.objects.all().order_by('-id')
-    return render(request, 'driver_list.html', {'drivers': drivers})
+class DriverListView(generic.ListView):
+    template_name = 'driver_list.html'
+    model = DriverModel
+    context_object_name = 'drivers'
+
+    def get_queryset(self):
+        return self.model.objects.all().order_by('-id')
 
 
-def update_driver_view(request, id):
-    driver_id = get_object_or_404(DriverModel, id=id)
-    if request.method == 'POST':
-        form = DriverForm(request.POST, request.FILES, instance=driver_id)
-        if form.is_valid():
-            form.save()
-            return redirect('/driver_list/')
-    else:
-        form = DriverForm(instance=driver_id)
-    return render(request, 'update_driver.html', {'form': form, 'driver_id': driver_id})
+class UpdateDriverView(generic.UpdateView):
+    template_name = 'update_driver.html'
+    form_class = DriverForm
+    model = DriverModel
+    success_url = '/driver_list/'
+
+    def get_object(self, **kwargs):
+        driver_id = self.kwargs.get('id')
+        return get_object_or_404(self.model, id=driver_id)
 
 
-def delete_driver_view(request, id):
-    driver_id = get_object_or_404(DriverModel, id=id)
-    driver_id.delete()
-    return redirect('/driver_list/')
+class DeleteDriverView(generic.View):
+    def get(self, request, id):
+        driver_id = get_object_or_404(DriverModel, id=id)
+        driver_id.delete()
+        return redirect('/driver_list/')
